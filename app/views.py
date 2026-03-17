@@ -1,0 +1,75 @@
+import json
+
+from django.shortcuts import render
+
+from .models import Student
+from django.http import HttpResponse
+from django.forms.models import model_to_dict
+from django.views.decorators.csrf import csrf_exempt
+
+
+# Create your views here.
+@csrf_exempt
+def all_data(req):
+    if req.method=='POST':
+        data=req.body
+        print(data)
+        print(type(data))
+        p_data=json.loads(data)
+        print(p_data)
+        print(type(p_data))
+        n=p_data.get('name')
+        a=p_data.get('age')
+        e=p_data.get('email')
+        c=p_data.get('contact')
+        if  'name' in p_data and 'age' in p_data and 'email' in p_data and 'contact' in p_data:
+            Student.objects.create(name=n,age=a,email=e,contact=c)
+            p_data={'msg':"objects created"}
+            return HttpResponse(json.dumps(p_data),content_type='application/json')
+        else:
+            if not 'name' in p_data:
+                p_data={'msg':"name is required"}
+                return HttpResponse(json.dumps(p_data),content_type='application/json')
+            if not 'age' in p_data:
+                p_data={'msg':"age is required"}
+                return HttpResponse(json.dumps(p_data),content_type='application/json')
+            
+            if not 'email' in p_data:
+                p_data={'msg':"email is required"}
+                return HttpResponse(json.dumps(p_data),content_type='application/json')
+            
+            if not 'contact' in p_data:
+                p_data={'msg':"contact is required"}
+                return HttpResponse(json.dumps(p_data),content_type='application/json')
+        return HttpResponse(json.dumps(p_data),content_type='application/json')
+        
+        
+
+            
+
+    data=Student.objects.all()
+    print(data)
+    p_data=list(data.values())
+    print(p_data)
+    j_data=json.dumps(p_data)
+    print(j_data)
+    return HttpResponse(j_data,content_type='application/json')
+
+def single_data(req,pk):
+    
+    data=Student.objects.get(id=pk)
+    print(data)
+    print(type(data))
+    p_data=model_to_dict(data)
+    print(p_data)
+    print(type(p_data))
+    j_data=json.dumps(p_data)
+    print(j_data)
+    return HttpResponse(j_data,content_type='application/json')
+    
+    
+
+
+
+    
+                      
